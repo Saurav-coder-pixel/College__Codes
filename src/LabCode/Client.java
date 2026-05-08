@@ -1,0 +1,51 @@
+import java.io.*;
+import java.net.*;
+
+class Client {
+    public static void main(String args[]) {
+        int serverport = 6666;
+        String address = "127.0.0.1";
+
+        try {
+            InetAddress ip = InetAddress.getByName(address);
+
+            System.out.println("SERVER IP ADDRESS " + address);
+            System.out.println("SERVER PORT " + serverport);
+
+            Socket socket = new Socket(ip, serverport);
+
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+            String line, msg;
+
+            while (true) {
+                System.out.print("Enter message: ");
+                line = br.readLine();
+
+                if (line == null || line.equalsIgnoreCase("exit")) {
+                    System.out.println("Disconnected from server.");
+                    break;
+                }
+
+                out.writeUTF(line);
+                out.flush();
+
+                msg = in.readUTF();
+                System.out.println("DATA RECEIVED FROM SERVER: " + msg);
+            }
+
+            // Close resources
+            br.close();
+            in.close();
+            out.close();
+            socket.close();
+
+        } catch (IOException e) {
+            System.out.println("EXCEPTION OCCURRED...");
+            e.printStackTrace();
+        }
+    }
+}
